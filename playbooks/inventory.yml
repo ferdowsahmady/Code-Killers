@@ -1,0 +1,43 @@
+all:
+  children:
+    dbservers:
+      hosts:
+        db101:
+          ansible_host: 192.168.154.10
+    webservers:
+      hosts:
+        webserver101:
+          ansible_host: 192.168.154.11
+        webserver102:
+          ansible_host: 192.168.154.12
+        webserver103:        
+          ansible_host: 192.168.154.13
+    lbservers:
+      hosts:
+        haproxy101:
+          ansible_host: 192.168.154.14
+    ngservers:
+      hosts: 
+        nagios101:
+          ansible_host: 192.168.154.15
+    dockerservers:
+      hosts:
+        dprimary101:
+          ansible_host: 192.168.154.17
+        dworker101:
+          ansible_host: 192.168.154.18
+        dworker102:
+          ansible_host: 192.168.154.19
+    kubeservers:
+      hosts:  
+        kube101:
+          ansible_host: 192.168.154.20
+    dnsservers:
+      hosts:  
+        dns101:
+          ansible_host: 192.168.154.21
+    jenkinsservers:
+      hosts:
+        jenkins101:
+          ansible_host: 192.168.154.22
+
