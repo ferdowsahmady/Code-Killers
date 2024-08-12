@@ -1,0 +1,33 @@
+---
+- name: Install python3-dnf package
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure python3-dnf is installed
+      dnf:
+        name: python3-dnf
+        state: present
+
+- name: Patch and update systems
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update package cache (Red Hat-based)
+      yum:
+        update_cache: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: Upgrade all packages (Red Hat-based)
+      yum:
+        name: '*'
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Reboot the system if a kernel update was performed (Red Hat-based)
+      command: /sbin/shutdown -r now
+      when: ansible_os_family == "RedHat" #and ansible_kernel | version_compare('5.4', '>=')
+
+    - name: Reboot the system (generic)
+      command: /sbin/shutdown -r now
+      when: ansible_kernel is defined and ansible_kernel | version_compare('5.4', '<')
+      ignore_errors: yes
