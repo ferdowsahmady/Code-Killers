@@ -1,0 +1,11 @@
+- name: Start and enable HAProxy
+  service:
+    name: haproxy
+    state: started
+    enabled: yes
+
+- name: Reload firewall
+  ansible.builtin.service:
+    name: Firewalld
+    state: started
+    enabled: yes 

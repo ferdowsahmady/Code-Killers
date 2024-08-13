@@ -1,0 +1,13 @@
+---
+- name: Install Apache
+  hosts: webservers
+  become: yes
+  roles:
+    - webservers
+    - firewall
+
+- name: Configure HAProxy
+  hosts: lbservers
+  become: yes
+  roles:
+    - haproxy

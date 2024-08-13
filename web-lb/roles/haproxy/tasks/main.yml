@@ -1,0 +1,23 @@
+---
+- name: Ensure EPEL repository is enabled
+  yum:
+    name: epel-release
+    state: present
+
+- name: Install HAProxy
+  yum:
+    name: haproxy
+    state: present
+  notify: Start and enable HAProxy
+
+- name: Deploy HAProxy configuration
+  template:
+    src: haproxy.cfg.j2 
+    dest: /etc/haproxy/haproxy.cfg
+
+- name: Add port 80
+  firewalld:
+    port: 80/tcp
+    permanent: yes
+    state: enabled
+  notify: Reload firewall
