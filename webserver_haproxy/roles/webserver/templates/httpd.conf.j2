@@ -1,0 +1,12 @@
+<VirtualHost *:{{ item.port }}>
+    ServerAdmin webmaster@{{ item.server_name }}
+    DocumentRoot {{ item.document_root }}
+    ServerName {{ item.server_name }}
+    ErrorLog logs/{{ item.server_name }}-error_log
+    CustomLog logs/{{ item.server_name }}-access_log common
+
+    <Directory "{{ item.document_root }}">
+        AllowOverride None
+        Require all granted
+    </Directory>
+</VirtualHost>

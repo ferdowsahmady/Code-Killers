@@ -1,0 +1,12 @@
+---
+- name: Configure Apache Virtual Hosts
+  hosts: webservers
+  become: yes
+  roles:
+    - webserver
+
+- name: Configure HAProxy Load Balancer
+  hosts: lbservers
+  become: yes
+  roles:
+    - lbserver

@@ -1,0 +1,24 @@
+---
+- name: Install HAProxy
+  yum:
+    name: haproxy
+    state: present
+  
+- name: Deploy HAProxy configuration file 
+  template:
+      src: haproxy.cfg.j2
+      dest: /etc/haproxy/haproxy.cfg
+  notify: Restart HAProxy
+
+- name: Allow http traffic 
+  firewalld:
+    port: "80/tcp"
+    permanent: yes
+    state: enabled
+    immediate: yes
+ 
+- name: Ensure SELinux is disabled in the config file
+  replace:
+    path: /etc/selinux/config
+    regexp: '^SELINUX=.*'
+    replace: 'SELINUX=disabled'

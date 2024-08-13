@@ -1,0 +1,28 @@
+---
+- name: creating system users in all hosts
+  user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    shell:  "{{ item.shell }}"
+    uid:  "{{ item.uid }}"
+    create_home: yes
+    state: present
+  with_items: "{{ system_users }}"
+
+- name: Set file limits
+  lineinfile:
+    path: /etc/security/limits.conf
+    line: "{{ item.domain }} {{ item.type }} {{ item.item }} {{ item.value }}"
+    state: present
+  with_items: "{{ ulimits }}"
+  notify: reload_limits
+
+- name: Configure DNS records
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item.address }} {{ item.name }}"
+    state: absent
+  when: ansible_distribution == "CentOS"
+  with_items: "{{ dns_records }}"
+
+
