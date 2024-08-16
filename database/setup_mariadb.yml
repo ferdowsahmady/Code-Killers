@@ -1,0 +1,113 @@
+---
+- name: Install Mariadb server
+  hosts: databases
+  become: yes
+  gather_facts: no
+  vars:
+    packages:
+      - mariadb-server
+      - python3-pip
+    service: mariadb
+
+  tasks:
+    - name: Install {{ packages }} package
+      yum:
+        name: "{{ packages }}"
+        state: latest
+      notify:
+        - start_service
+
+    - name: Enable mariadb
+      service:
+        name: mariadb
+        enabled: yes
+        state: started
+ 
+    - name: Install php and httpd for lamp stack
+      yum:
+        name:
+          - httpd
+          - php
+        state: latest
+
+    - name: create my php file
+      copy:
+        src: /home/ansible/ansible/mariadb_setup/my.php
+        dest: /var/www/html/my.php
+        remote_src: no
+
+    - name: httpd enabled and running
+      service:
+        name: httpd
+        enabled: yes
+        state: started
+   
+    - name: Install Epel relase and phpmyadmin
+      yum:
+        name: 
+          - epel-release
+          - phpmyadmin
+        state: latest
+
+    # - name: Install phpmyadmin
+    #   yum:
+    #     name: phpmyadmin
+    #     state: latest
+
+    - name: phpmyadmin config sourcing
+      copy:
+        src: /home/ansible/ansible/mariadb_setup/phpmyadmin.conf
+        dest: /etc/httpd/conf.d/phpMyAdmin.conf
+
+    - name: Install expect
+      package:
+        name: expect
+        state: present
+
+    - name: Upload Expect script
+      copy:
+        src: /home/ansible/ansible/mariadb_setup/expect.exp
+        dest: /tmp/expect.exp
+        mode: '0755'
+
+    - name: Run Expect script to secure MariaDB
+      shell: /usr/bin/expect /tmp/expect.exp
+      register: result
+
+    # - name: Create MariaDB user and grant privileges
+    #   community.mysql.mysql_user:
+    #     name: 
+    #     password: ""
+    #     host: "{{ db_host }}"
+    #     priv: "{{ db_name }}.*:ALL"
+    #     state: present
+    #     login_user: "{{ db_root_user }}"
+    #     login_password: "{{ db_root_password }}"
+    #     login_host: "{{ db_host }}"
+
+    # - name: Allow HTTP service through the firewall
+    #   firewalld:
+    #     service: http
+    #     state: enabled
+    #     permanent: yes
+
+    - name: Allow HTTPS service through the firewall
+      firewalld:
+        service: https
+        state: enabled
+        permanent: yes
+
+    - name: Reload firewall to apply changes
+      command: firewall-cmd --reload
+        
+  handlers:
+    - name: start_service
+      service:
+        name: "{{ service }}"
+        state: restarted
+ 
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted
+ 
