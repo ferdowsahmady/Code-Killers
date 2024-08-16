@@ -15,9 +15,45 @@
     src: haproxy.cfg.j2 
     dest: /etc/haproxy/haproxy.cfg
 
+# This directory is specified in haproxy configuration as stats socket, it must be present.
+- name: Check if the directory exists, if not, create it
+  file:
+    path: /run/haproxy/
+    state: directory  
+  notify: Start and enable HAProxy
+
+# Frontend port -  This serves the webservers' content.
 - name: Add port 80
-  firewalld:
+  ansible.builtin.firewalld:
     port: 80/tcp
     permanent: yes
     state: enabled
+
+# Stats page port
+- name: Add port 8080
+  ansible.builtin.firewalld:
+    port: 8080/tcp
+    permanent: yes
+    state: enabled
+
+# To see content on browser
+- name: Add http service to Firewalld
+  firewalld:
+    service: http
+    state: enabled
+    permanent: yes
+    immediate: yes
+
+- name: Add https service to Firewalld
+  firewalld:
+    service: https
+    state: enabled
+    permanent: yes
+    immediate: yes
   notify: Reload firewall
+
+- name: Start and enable HAProxy
+  service:
+    name: haproxy
+    state: started
+    enabled: yes

@@ -4,7 +4,7 @@
   tasks:
     - name: Install Nagios and required packages
       yum:
-        name: 
+        name:
           - httpd
           - nagios
           - nagios-plugins-all
@@ -12,7 +12,7 @@
           - nrpe
           - epel-release
         state: present
-    
+        
     - name: Enable and start Nagios and Apache services
       systemd:
         name: "{{ item }}"
@@ -52,6 +52,7 @@
         - prdx-webserver101.ziyotek1.local
         - prdx-webserver102.ziyotek1.local
         - prdx-webserver103.ziyotec1.local
+        - prdx-webserver103.ziyotek1.local
         - prdx-haproxy101.ziyotek1.local
         - prdx-nagios101.ziyotek1.local
         - prdx-dprimary101.ziyotek1.local
@@ -61,6 +62,8 @@
         - prdx-dns101.ziyotek1.local
         - prdx-jenkins101.ziyotek1.local  
         - prdx-nagios101.ziyotek1.local  
+        - prdx-jenkins101.ziyotek1.local
+        
       notify:
         - Restart Nagios
 
@@ -98,4 +101,5 @@
         name: nrpe
         enabled: yes
         state: started
+        state: started  
 

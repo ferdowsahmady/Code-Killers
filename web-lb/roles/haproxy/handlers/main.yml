@@ -5,7 +5,6 @@
     enabled: yes
 
 - name: Reload firewall
-  ansible.builtin.service:
-    name: Firewalld
+  firewalld:
     state: started
     enabled: yes 
