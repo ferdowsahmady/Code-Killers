@@ -1,7 +1,7 @@
 ---
 - name: Install common packages
   hosts: all
-  become: yes
+  become: true
   tasks:
     - name: Install bind-utils
       package:
