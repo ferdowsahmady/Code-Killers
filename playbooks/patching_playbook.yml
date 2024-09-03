@@ -1,0 +1,29 @@
+---
+- name: Install python3-dnf package
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure python3-dnf is installed
+      dnf:
+        name: python3-dnf
+        state: present
+
+- name: Patch and update systems
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update package cache (CentOS)
+      yum:
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+
+    - name: Upgrade all packages (CentOS)
+      yum:
+        name: '*'
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+    # - name: Reboot the system if a kernel update was performed (CentOS 9)
+    #   reboot:
+    #     reboot_timeout: 1200
+    #   when: ansible_distribution == "CentOS"

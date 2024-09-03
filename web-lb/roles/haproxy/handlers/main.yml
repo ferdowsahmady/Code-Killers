@@ -1,0 +1,10 @@
+- name: Start and enable HAProxy
+  service:
+    name: haproxy
+    state: started
+    enabled: yes
+
+- name: Reload firewall
+  firewalld:
+    state: started
+    enabled: yes 
