@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+            }
+        }
+        
+        stage('Tag Pipeline') {
+            when {
+                expression {
+                    def userInput = input message: 'Please provide a tag to continue:', ok: 'Proceed',
+                                          parameters: [string(name: 'Type team name', defaultValue: '', description: 'Enter correct name to tag the pipeline')]
+                    
+                    if (userInput == null) { // if input is aborted
+                        error "Pipeline aborted by user"
+                    } else if (userInput != 'Code Killers') {
+                        error "Incorrect tag. Build failed."
+                    }
+                    // We must return true to continue
+                    return true
+                }
+            }
+            steps {
+                echo 'Tagging pipeline...'
+                // Add the steps required to tag the pipeline here
+            }
+        }
+    }
+}
