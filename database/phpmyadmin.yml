@@ -1,0 +1,56 @@
+---
+- name: Install and configure LAMP stack with phpMyAdmin
+  hosts: dbservers
+  become: yes
+  vars:
+    packages:
+      - httpd
+      - php
+      - php-mysqlnd
+      - phpmyadmin
+
+  tasks:
+    # - name: Install EPEL release repository
+    #   yum:
+    #     name: epel-release
+    #     state: present
+
+    - name: Install necessary packages
+      yum:
+        name: "{{ packages }}"
+        state: present
+      notify:
+        - Start and enable httpd service
+ 
+    - name: create my php file
+      copy:
+        src: /home/ansible/Code-Killers/database/templates/my.php
+        dest: /var/www/html/my.php
+        mode: '0755'
+
+    - name: Create Mysql configuration file
+      template:
+        src: /home/ansible/Code-Killers/database/templates/my.cnf
+        dest: /etc/my.cnf
+
+    - name: phpmyadmin config sourcing
+      copy:
+        src: /home/ansible/Code-Killers/database/templates/phpmyadmin.conf
+        dest: /etc/httpd/conf.d/phpMyAdmin.conf
+
+    - name: Allow HTTPS service through the firewall
+      firewalld:
+        service: https
+        state: enabled
+        permanent: yes
+
+    - name: Reload firewall to apply changes
+      command: firewall-cmd --reload
+        
+
+  handlers:
+    - name: Start and enable httpd service
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes

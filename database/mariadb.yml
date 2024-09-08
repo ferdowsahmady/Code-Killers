@@ -1,0 +1,46 @@
+---
+
+- name: Install MariaDb server
+  hosts: dbservers
+  become: yes 
+  gather_facts: yes 
+
+  tasks:
+
+    - name: Create a Mariadb repo in remote server
+      copy:
+         src: /home/ansible/Code-Killers/database/templates/mariadb.repo
+         dest: /etc/yum.repos.d/mariadb.repo
+
+    - name: Install EPEL release repository
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Install MariaDB server and client
+      yum:
+        name:
+          - MariaDB-server
+          - MariaDB-client
+        state: latest
+
+    - name: Start and enable MariaDB service
+      systemd:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Install expect
+      package:
+        name: expect
+        state: present
+
+    - name: Upload Expect script
+      copy:
+        src: /home/ansible/Code-Killers/database/templates/expect.exp
+        dest: /tmp/expect.exp
+        mode: '0755'
+
+    # - name: Run Expect script to secure MariaDB
+    #   shell: /usr/bin/expect /tmp/expect.exp
+    #   register: result
